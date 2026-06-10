@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { logger } from "./src/config/logger.js";
 dotenv.config();
 
 import connectDB from "./src/db/index.js";
@@ -10,9 +11,9 @@ const port = process.env.PORT || 8080;
 connectDB()
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`server running at  http://localhost:${port}`);
+      logger.info(`server running at  http://localhost:${port}`);
     });
   })
   .catch((err) => {
-    console.log("error occured ", err);
+    logger.error("error occured ", err);
   });

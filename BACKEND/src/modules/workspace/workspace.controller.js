@@ -1,175 +1,87 @@
-import { Workspace } from "../models/workspace.model.js";
-import { User } from "../models/user.model.js";
-import { asyncHandler } from "../utils/asynchandler.js";
-import { ApiResponse } from "../utils/api-response.js";
-import { ApiError } from "../utils/api-error.js";
+import { asyncHandler } from "../../utils/asynchandler.js";
+import { ApiResponse } from "../../utils/api-response.js";
+
+import {
+  createWorkspaceService,
+  getWorkspaceService,
+  addMemberService,
+  leaveWorkspaceService,
+  removeMemberService,
+  deleteWorkspaceService,
+  getUserWorkspacesService,
+  searchWorkspacesService,
+} from "./workspace.service.js";
 
 const createWorkspace = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-
-  if (!name) {
-    throw new ApiError(400, "Name not found");
-  }
-
-  const workSpace = await Workspace.create({
-    name: name,
-    owner: req.user?._id,
-    members: [req.user?._id],
+  const workspace = await createWorkspaceService({
+    name: req.body.name,
+    userId: req.user._id,
   });
-
-  const createdWorkSpace = await Workspace.findById(workSpace?._id)
-    .populate("owner", "username email")
-    .populate("members", "username email");
-
-  if (!createdWorkSpace) {
-    throw new ApiError("Workspace Not Found");
-  }
 
   return res
     .status(201)
     .json(
-      new ApiResponse(
-        201,
-        { workspace: createdWorkSpace },
-        "workspace created successfully",
-      ),
+      new ApiResponse(201, { workspace }, "workspace created successfully"),
     );
 });
 
 const getWorkSpace = asyncHandler(async (req, res) => {
-  const workSpace = await Workspace.findById(req.params.workspaceId)
-    .populate("owner", "username  email")
-    .populate("members", "username email");
+  const workspace = await getWorkspaceService({
+    workspaceId: req.params.workspaceId,
+    userId: req.user._id,
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { workSpace }, "workspace fetched"));
+    .json(new ApiResponse(200, { workspace }, "workspace fetched"));
 });
 
 const addMember = asyncHandler(async (req, res) => {
-  const { workspaceId } = req.params;
-  const workSpace = await Workspace.findOne({
-    _id: workspaceId,
-    owner: req.user._id,
+  await addMemberService({
+    workspaceId: req.params.workspaceId,
+    email: req.body.memberId,
+    userId: req.user._id,
   });
-
-  if (!workSpace) {
-    throw new ApiError(404, "workspace not found");
-  }
-
-  const { memberId } = req.body; // Frontend sends an email address here
-
-  const userToAdd = await User.findOne({ email: memberId.toLowerCase().trim() });
-  if (!userToAdd) {
-    throw new ApiError(404, "No user found with this email address");
-  }
-
-  const memberExists = workSpace.members.some(
-    (existingMember) => existingMember.toString() === userToAdd._id.toString(),
-  );
-
-  if (memberExists) {
-    throw new ApiError(400, "Member already exists in this workspace");
-  }
-
-  workSpace.members.push(userToAdd._id);
-
-  await workSpace.save();
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "Member added to workspace"));
+    .json(new ApiResponse(201, {}, "Member added to workspace"));
 });
 
 const leaveWorkspace = asyncHandler(async (req, res) => {
-  const { workspaceId } = req.params;
-  const workSpace = await Workspace.findById(workspaceId);
+  await leaveWorkspaceService({
+    workspaceId: req.params.workspaceId,
+    userId: req.user._id,
+  });
 
-  if (!workSpace) {
-    throw new ApiError(404, "workspace not found");
-  }
-
-  const memberExists = workSpace.members.some(
-    (existingMember) => existingMember.toString() === req.user._id.toString(),
-  );
-
-  if (!memberExists) {
-    throw new ApiError(404, "Member not found in workspace");
-  }
-
-  if (workSpace.owner.toString() === req.user._id.toString()) {
-    throw new ApiError(400, "Owner cannot leave workspace");
-  }
-
-  workSpace.members.pull(req.user._id);
-
-  await workSpace.save();
-
-  return res.status(200).json(new ApiResponse(200, " workspace left"));
+  return res.status(200).json(new ApiResponse(200, {}, "workspace left"));
 });
 
 const removeMember = asyncHandler(async (req, res) => {
-  const workSpace = await Workspace.findOne({
-    _id: req.params.workspaceId,
-    owner: req.user._id,
+  await removeMemberService({
+    workspaceId: req.params.workspaceId,
+    memberId: req.body.member,
+    userId: req.user._id,
   });
 
-  if (!workSpace) {
-    throw new ApiError(404, "workspace not found");
-  }
-
-  const { member } = req.body;
-
-  const memberExists = workSpace.members.some(
-    (existingMember) => existingMember.toString() === member.toString(),
-  );
-
-  if (!memberExists) {
-    throw new ApiError(404, "member does not exist");
-  }
-
-  if (workSpace.owner.toString() === member.toString()) {
-    throw new ApiError(400, "Owner cannot be removed");
-  }
-
-  workSpace.members.pull(member);
-
-  await workSpace.save();
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, "Member removed from workspace"));
+  return res.status(200).json(new ApiResponse(200, {}, "Member removed"));
 });
 
 const deleteWorkSpace = asyncHandler(async (req, res) => {
-  const workSpace = await Workspace.findOne({
-    _id: req.params.workspaceId,
-    owner: req.user._id,
+  await deleteWorkspaceService({
+    workspaceId: req.params.workspaceId,
+    userId: req.user._id,
   });
 
-  if (!workSpace) {
-    throw new ApiError(404, "workspace not found");
-  }
-
-  await workSpace.deleteOne();
-
-  return res.status(200).json(new ApiResponse(200, "Workspace deleted"));
+  return res.status(200).json(new ApiResponse(200, {}, "Workspace deleted"));
 });
 
 const getUserWorkspaces = asyncHandler(async (req, res) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
-
-  const skip = (page - 1) * limit;
-
-  const workspaces = await Workspace.find({
-    members: req.user._id,
-  })
-    .populate("owner", "username email")
-    .populate("members", "username email")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
+  const workspaces = await getUserWorkspacesService({
+    userId: req.user._id,
+    page: Number(req.query.page) || 1,
+    limit: Number(req.query.limit) || 10,
+  });
 
   return res
     .status(200)
@@ -177,19 +89,10 @@ const getUserWorkspaces = asyncHandler(async (req, res) => {
 });
 
 const searchWorkspaces = asyncHandler(async (req, res) => {
-  const { query } = req.query;
-
-  const workspaces = await Workspace.find({
-    members: req.user._id,
-
-    name: {
-      $regex: query,
-      $options: "i",
-    },
-  })
-    .populate("owner", "username email")
-    .populate("members", "username email")
-    .sort({ createdAt: -1 });
+  const workspaces = await searchWorkspacesService({
+    userId: req.user._id,
+    query: req.query.query || "",
+  });
 
   return res
     .status(200)

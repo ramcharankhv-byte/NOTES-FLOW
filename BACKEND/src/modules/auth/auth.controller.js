@@ -1,7 +1,7 @@
-import { asyncHandler } from "../utils/asynchandler.js";
+import { asyncHandler } from "../../utils/asynchandler.js";
 import { OAuth2Client } from "google-auth-library";
-import { ApiResponse } from "../utils/api-response.js";
-import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../../utils/api-response.js";
+import { ApiError } from "../../utils/api-error.js";
 import { User } from "./auth.model.js";
 import jwt from "jsonwebtoken";
 

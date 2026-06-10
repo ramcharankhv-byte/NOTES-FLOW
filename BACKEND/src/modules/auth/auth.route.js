@@ -16,8 +16,8 @@ import {
   userLoginValidator,
 } from "./auth.validators.js";
 
-import { validate } from "../middleware/validator.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { validate } from "../../middleware/validator.middleware.js";
+import { verifyJwt } from "./auth.middleware.js";
 
 const authRouter = Router();
 

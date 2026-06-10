@@ -9,16 +9,16 @@ import {
   deleteWorkSpace,
   getUserWorkspaces,
   searchWorkspaces,
-} from "../controllers/workspace.controller.js";
+} from "./workspace.controller.js";
 
-import { validate } from "../middleware/validator.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { validate } from "../../middleware/validator.middleware.js";
+import { verifyJwt } from "../auth/auth.middleware.js";
 
 import {
   createWorkspaceValidator,
   addMemberValidator,
   removeMemberValidator,
-} from "../validators/index.js";
+} from "./workspace.validator.js";
 
 const workspaceRouter = Router();
 

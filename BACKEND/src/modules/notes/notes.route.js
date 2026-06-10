@@ -6,15 +6,15 @@ import {
   updateNote,
   deleteNote,
   searchNotes,
-} from "../controllers/note.controller.js";
+} from "./note.controller.js";
 
-import { validate } from "../middleware/validator.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { validate } from "../../middleware/validator.middleware.js";
+import { verifyJwt } from "../auth/auth.middleware.js";
 
 import {
   createNoteValidator,
   updateNoteValidator,
-} from "../validators/index.js";
+} from "./notes.validators.js";
 
 const noteRouter = Router();
 

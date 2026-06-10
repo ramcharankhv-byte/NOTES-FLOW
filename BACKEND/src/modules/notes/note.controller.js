@@ -1,5 +1,5 @@
-import { asyncHandler } from "../utils/asynchandler.js";
-import { ApiResponse } from "../utils/api-response.js";
+import { asyncHandler } from "../../utils/asynchandler.js";
+import { ApiResponse } from "../../utils/api-response.js";
 
 import {
   createNoteService,
@@ -7,7 +7,7 @@ import {
   updateNoteService,
   deleteNoteService,
   searchNotesService,
-} from "../services/notes.service.js";
+} from "./notes.service.js";
 
 const createNote = asyncHandler(async (req, res) => {
   const note = await createNoteService({

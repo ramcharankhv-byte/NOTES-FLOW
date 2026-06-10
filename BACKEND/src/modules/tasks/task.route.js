@@ -6,16 +6,16 @@ import {
   updateTaskStatus,
   assignTask,
   deleteTask,
-} from "../controllers/task.controller.js";
+} from "./task.controller.js";
 
 import {
   createTaskValidator,
   updateTaskStatusValidator,
   assignTaskValidator,
-} from "../validators/index.js";
+} from "./tasks.validator.js";
 
-import { validate } from "../middleware/validator.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { validate } from "../../middleware/validator.middleware.js";
+import { verifyJwt } from "../auth/auth.middleware.js";
 
 const taskRouter = Router();
 

@@ -1,6 +1,8 @@
-import { Note } from "../models/notes.model.js";
-import { Workspace } from "../models/workspace.model.js";
-import { ApiError } from "../utils/api-error.js";
+import { Note } from "./notes.model.js";
+import { Workspace } from "../workspace/workspace.model.js";
+import { asyncHandler } from "../../utils/asynchandler.js";
+import { ApiResponse } from "../../utils/api-response.js";
+import { ApiError } from "../../utils/api-error.js";
 
 const checkWorkspaceMembership = async (workspaceId, userId) => {
   const workspace = await Workspace.findById(workspaceId);

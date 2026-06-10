@@ -1,7 +1,7 @@
-import { asyncHandler } from "../utils/asynchandler.js";
+import { asyncHandler } from "../../utils/asynchandler.js";
+import { ApiResponse } from "../../utils/api-response.js";
+import { ApiError } from "../../utils/api-error.js";
 import { OAuth2Client } from "google-auth-library";
-import { ApiResponse } from "../utils/api-response.js";
-import { ApiError } from "../utils/api-error.js";
 import { User } from "./auth.model.js";
 import jwt from "jsonwebtoken";
 
@@ -106,13 +106,12 @@ export const refreshTokens = async (refreshToken) => {
     throw new ApiError(401, "No Token Found in DATABASE");
   }
 
-  const { accessToken, refreshToken } = await generateAccessandRefreshTokens(
-    user._id,
-  );
+  const { accessToken, refreshToken: newRefreshToken } =
+    await generateAccessandRefreshTokens(user._id);
 
-  user.refreshToken = refreshToken;
+  user.refreshToken = newRefreshToken;
 
   await user.save();
 
-  return { accessToken, refreshToken };
+  return { accessToken, newRefreshToken };
 };
