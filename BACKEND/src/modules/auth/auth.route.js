@@ -9,15 +9,15 @@ import {
   initiateGoogleAuth,
   completeGoogleSignup,
   googleCallback,
-} from "../controllers/auth.controller.js";
+} from "./auth.controller.js";
 
 import {
   userRegisterValidator,
   userLoginValidator,
-} from "../validators/index.js";
+} from "./auth.validators.js";
 
-import { validate } from "../middleware/validator.middleware.js";
-import { verifyJwt } from "../middleware/auth.middleware.js";
+import { validate } from "../../middleware/validator.middleware.js";
+import { verifyJwt } from "./auth.middleware.js";
 
 const authRouter = Router();
 
