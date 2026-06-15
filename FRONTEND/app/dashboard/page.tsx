@@ -123,7 +123,7 @@ export default function DashboardPage() {
         {/* Header Section */}
         <motion.div variants={itemVariants} className="mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-1 sm:mb-2 break-words">
-            Welcome back,{" "}
+            Welcome,{" "}
             <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
               {user.username}
             </span>
