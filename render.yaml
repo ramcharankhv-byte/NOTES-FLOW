@@ -1,7 +1,31 @@
 services:
   - type: web
     name: notes-flow-backend
-    env: node
-    buildCommand: cd BACKEND && npm install
-    startCommand: cd BACKEND && npm start
+    runtime: node
+    region: singapore
+    plan: free
     rootDir: BACKEND
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render injects PORT automatically; index.js reads process.env.PORT.
+      - key: MONGO_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
