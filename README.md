@@ -439,10 +439,6 @@ Based on the PRD documentation, here are the key backend workflows:
 
 MIT - Feel free to use this project as a template or learning resource.
 
-## 💬 Support
-
-For questions or issues, check the documentation or create an issue in your repository.
-
 ---
 
 **Built with ❤️ using Node.js and Next.js 16**
